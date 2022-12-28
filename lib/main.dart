@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:supabase_pregum_sample/account_page.dart';
+import 'package:supabase_pregum_sample/login_email_password_page.dart';
 import 'package:supabase_pregum_sample/login_page.dart';
 import 'package:supabase_pregum_sample/splash_page.dart';
 
@@ -13,7 +15,7 @@ Future<void> main() async {
       anonKey:
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYyNjk5OTQ1MSwiZXhwIjoxOTQyNTc1NDUxfQ.eB5z-D8DUKuwnwEy39UZ5AGFnb9KoVFquOEb3zz4948');
 
-  runApp(MyApp());
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -43,6 +45,13 @@ class MyApp extends StatelessWidget {
           child: const LoginPage(),
         ),
       ),
+      GoRoute(
+        path: '/login_email_password',
+        pageBuilder: (context, state) => const MaterialPage<void>(
+          // key: state.pageKey,
+          child: LoginEmailPasswordPage(),
+        ),
+      )
     ],
   );
 
@@ -59,7 +68,7 @@ class MyApp extends StatelessWidget {
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
             primary: Colors.green,
-            onSurface: Colors.grey,
+            // onSurface: Colors.,
           ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(

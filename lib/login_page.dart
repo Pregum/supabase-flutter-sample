@@ -43,6 +43,12 @@ class _LoginPageState extends State<LoginPage> {
             onPressed: _isLoading ? null : _singIn,
             child: Text(_isLoading ? 'Loading' : 'Send Magic Link'),
           ),
+          const SizedBox(height: 18),
+          TextButton(
+              onPressed: () {
+                context.push('/login_email_password');
+              },
+              child: const Text('パスワードでのログインはこちら')),
         ],
       ),
     );

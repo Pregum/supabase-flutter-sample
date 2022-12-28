@@ -62,6 +62,7 @@ class _AccountPageState extends State<AccountPage> {
           .select()
           .eq('id', userId)
           .single() as Map;
+      setState(() => _usernameController.text = data['username'] ?? 'unknwon');
     } on PostgrestException catch (error) {
       context.showErrorSnackBar(message: error.message);
     } catch (error) {

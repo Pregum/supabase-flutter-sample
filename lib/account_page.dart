@@ -3,6 +3,7 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_pregum_sample/avatar.dart';
 import 'package:supabase_pregum_sample/build_context_ex.dart';
 
 class AccountPage extends StatefulWidget {
@@ -15,7 +16,7 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> {
   final _usernameController = TextEditingController();
   final _websiteController = TextEditingController();
-  String? avatarUrl;
+  String? _avatarUrl;
   var _loading = false;
   @override
   Widget build(BuildContext context) {
@@ -26,6 +27,11 @@ class _AccountPageState extends State<AccountPage> {
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
         children: [
+          Avatar(
+            imageUrl: _avatarUrl,
+            onUpload: _onUpload,
+          ),
+          const SizedBox(height: 18),
           TextFormField(
             controller: _usernameController,
             decoration: const InputDecoration(labelText: 'User Name'),
@@ -62,7 +68,9 @@ class _AccountPageState extends State<AccountPage> {
           .select()
           .eq('id', userId)
           .single() as Map;
-      setState(() => _usernameController.text = data['username'] ?? 'unknwon');
+      _usernameController.text = (data['username'] ?? '') as String;
+      _websiteController.text = (data['website'] ?? '') as String;
+      _avatarUrl = (data['avatar_url'] ?? '') as String;
     } on PostgrestException catch (error) {
       context.showErrorSnackBar(message: error.message);
     } catch (error) {
@@ -71,6 +79,31 @@ class _AccountPageState extends State<AccountPage> {
 
     setState(() {
       _loading = false;
+    });
+  }
+
+  Future<void> _onUpload(String imageUrl) async {
+    try {
+      final userId = supabase.auth.currentUser!.id;
+      await supabase.from('profiles').upsert({
+        'id': userId,
+        'avatar_url': imageUrl,
+      });
+      if (mounted) {
+        context.showSnackBar(message: 'Updated your profile image!');
+      }
+    } on PostgrestException catch (error) {
+      context.showErrorSnackBar(message: error.message);
+    } catch (error) {
+      context.showErrorSnackBar(message: 'Unexcepted error has occurred');
+    }
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _avatarUrl = imageUrl;
     });
   }
 
